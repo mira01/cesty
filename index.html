@@ -1,71 +1,899 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html lang="en">
-<head>
-  <meta charset="UTF-8"/>
-  <title>Svatební cesta na Sněžku - GPX Map Viewer</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
-  <style>
-    #map { height: 90vh; width: 100vw; }
-    body { margin: 0; }
-  </style>
-</head>
-<body>
-  <h2>Svatební cesta na Sněžku - GPX Map Viewer</h2>
-  <div id="map"></div>
-
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/leaflet-gpx@1.7.0/leaflet-gpx.js"></script>
-  <!-- Snake animation plugin -->
-  <script src="https://cdn.jsdelivr.net/npm/leaflet.polyline.snakeanim@0.2.0/L.Polyline.SnakeAnim.min.js"></script>
-  <script>
-    // Initialize map (center on Czech Republic as a default)
-    var map = L.map('map').setView([50.75, 15.73], 10);
-
-    // Add OpenStreetMap tiles
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 18,
-      attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
-
-    // Load your GPX file (make sure the filename matches exactly, including spaces and diacritics)
-    var gpxFile = 'Svatební cesta na Sněžku.gpx';
-
-    new L.GPX(gpxFile, {
-      async: true,
-      marker_options: {
-        startIconUrl: 'https://unpkg.com/leaflet-gpx@1.7.0/pin-icon-start.png',
-        endIconUrl: 'https://unpkg.com/leaflet-gpx@1.7.0/pin-icon-end.png',
-        shadowUrl: 'https://unpkg.com/leaflet-gpx@1.7.0/pin-shadow.png'
-      },
-      polyline_options: {
-        color: 'red',
-        weight: 4,
-        opacity: 0.75
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script> -->
+    <script src="deps/Leaflet-1.7.1/dist/leaflet.js"></script>
+    <script src="deps/Leaflet-1.7.1/dist/leaflet-src.js"></script>
+    <script src="deps/leaflet.motion/dist/leaflet.motion.min.js"></script>
+    <script src="deps/leaflet.encoded/Polyline.encoded.js"></script>
+    <link rel="stylesheet" href="deps/Leaflet-1.7.1/dist/leaflet.css" />
+    <script src="../data/schrecksee/instructions.json"></script>
+    <style>
+      html, body {
+        height: 100%;
+        padding: 0;
+        margin: 0;
       }
-    })
-    .on('loaded', function(e) {
-      var gpx = e.target;
-      var latlngs = [];
-      gpx.getLayers().forEach(function(layer) {
-        if (layer instanceof L.Polyline) {
-          latlngs = latlngs.concat(layer.getLatLngs());
-        }
-      });
-
-      // Fit map to GPX bounds
-      map.fitBounds(L.latLngBounds(latlngs));
-
-      // Draw animated (snake) polyline
-      var snakeLine = L.polyline(latlngs, {
-        color: 'red',
-        weight: 4,
-        opacity: 0.75
+      #map {
+        /* configure the size of the map */
+        width: 100%;
+        height: 100%;
+      }
+      .leaflet-popup-content img {
+        /* suppres displaying images in popup*/
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script type="module">
+      // initialize Leaflet
+      var map = L.map('map', {});
+      // show the scale bar on the lower left corner
+      L.control.scale({metric: true, imperial: false}).addTo(map);
+      // add the OpenStreetMap tiles
+      var osm_tiles = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+      var osmbike_tiles = "https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png";
+      L.tileLayer(osm_tiles, {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
       }).addTo(map);
 
-      // Start the snake animation
-      snakeLine.snakeIn();
-    });
-  </script>
-</body>
-</html>.
+      var options = {};
+      var motion_options = { auto: true
+                           , duration: 10000
+                           };
+
+      
+    //  var instructions = [
+    //    {
+    //      instruction: () => map.setView({lat: 47.4562, lon: 10.4974}, 14),
+    //      duration: 2000,
+    //    },
+    //    {
+    //      instruction: () => {
+    //        var line = L.motion.polyline(data, {}, motion_options, {}).addTo(map);
+    //        },
+    //      duration: 10000,
+    //    }];
+    //  instructions.reduce((acc, i) => {
+    //    setTimeout(i.instruction, acc)
+    //    return acc + i.duration;
+    //  } , 0);
+
+    var data = [
+
+{'lat': 54.150444444444446, 'lon': 12.099502777777777, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250809_194217041_MFNR.jpg', 'date': '2025:08:09'},
+
+{'lat': 54.16170833333333, 'lon': 12.103686111111111, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250809_204310427_MFNR.jpg', 'date': '2025:08:09'},
+
+{'lat': 54.17888333333333, 'lon': 12.094194444444446, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250809_205145510_MFNR.jpg', 'date': '2025:08:09'},
+
+{'lat': 54.17905277777778, 'lon': 12.094172222222223, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250809_205149451_MFNR.jpg', 'date': '2025:08:09'},
+
+{'lat': 54.18208611111111, 'lon': 12.092119444444444, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250809_205320442_MFNR.jpg', 'date': '2025:08:09'},
+
+{'lat': 54.182175, 'lon': 12.092058333333334, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250809_205322772_MFNR.jpg', 'date': '2025:08:09'},
+
+{'lat': 54.18271111111111, 'lon': 12.09161388888889, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250809_205352335_MFNR.jpg', 'date': '2025:08:09'},
+
+{'lat': 54.187777777777775, 'lon': 12.089061111111112, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250809_205539236_MFNR.jpg', 'date': '2025:08:09'},
+
+{'lat': 54.197288888888885, 'lon': 12.083705555555555, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250809_205846606_MFNR.jpg', 'date': '2025:08:09'},
+
+{'lat': 54.41596944444444, 'lon': 11.986955555555555, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250809_214618735.jpg', 'date': '2025:08:09'},
+
+{'lat': 54.416466666666665, 'lon': 11.986877777777776, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250809_215517837_MFNR.jpg', 'date': '2025:08:09'},
+
+{'lat': 55.90137222222222, 'lon': 12.865408333333333, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250810_102838838_MFNR.jpg', 'date': '2025:08:10'},
+
+{'lat': 55.951950000000004, 'lon': 12.806411111111112, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250810_103224451_MFNR.jpg', 'date': '2025:08:10'},
+
+{'lat': 56.814255555555555, 'lon': 13.904869444444445, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250810_115155866_MFNR.jpg', 'date': '2025:08:10'},
+
+{'lat': 57.80239444444444, 'lon': 14.271744444444446, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250810_132249146_MFNR.jpg', 'date': '2025:08:10'},
+
+{'lat': 57.99945, 'lon': 14.431125, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250810_142833391_MFNR.jpg', 'date': '2025:08:10'},
+
+{'lat': 57.999475000000004, 'lon': 14.431122222222221, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250810_142839382_MFNR.jpg', 'date': '2025:08:10'},
+
+{'lat': 57.99944722222222, 'lon': 14.431219444444444, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250810_143452163_MFNR.jpg', 'date': '2025:08:10'},
+
+{'lat': 59.72324444444445, 'lon': 17.803786111111112, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250810_211022435_MFNR.jpg', 'date': '2025:08:10'},
+
+{'lat': 60.46262222222222, 'lon': 17.41341111111111, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250811_095920940_MFNR.jpg', 'date': '2025:08:11'},
+
+{'lat': 60.471133333333334, 'lon': 17.39553888888889, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250811_100012213_MFNR.jpg', 'date': '2025:08:11'},
+
+{'lat': 60.47133055555556, 'lon': 17.39463333333333, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250811_100014677_MFNR.jpg', 'date': '2025:08:11'},
+
+{'lat': 61.006141666666664, 'lon': 16.986511111111113, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250811_152005477_MFNR.jpg', 'date': '2025:08:11'},
+
+{'lat': 61.006141666666664, 'lon': 16.986511111111113, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250811_152006137_BURST006.jpg', 'date': '2025:08:11'},
+
+{'lat': 61.07362222222223, 'lon': 16.966702777777776, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250811_152720630_MFNR.jpg', 'date': '2025:08:11'},
+
+{'lat': 61.114847222222224, 'lon': 17.007894444444446, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250811_152806219_MFNR.jpg', 'date': '2025:08:11'},
+
+{'lat': 61.294888888888885, 'lon': 17.01891111111111, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250811_154546077_MFNR.jpg', 'date': '2025:08:11'},
+
+{'lat': 62.38214444444444, 'lon': 17.352011111111114, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250811_172611337_MFNR.jpg', 'date': '2025:08:11'},
+
+{'lat': 62.388669444444446, 'lon': 17.34111111111111, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250811_172745845_MFNR.jpg', 'date': '2025:08:11'},
+
+{'lat': 62.38903611111111, 'lon': 17.340816666666665, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250811_172748757_MFNR.jpg', 'date': '2025:08:11'},
+
+{'lat': 62.44150277777777, 'lon': 17.32971388888889, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250812_132759524_MFNR.jpg', 'date': '2025:08:12'},
+
+{'lat': 62.44685833333333, 'lon': 17.33505, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250812_141755284_MFNR.jpg', 'date': '2025:08:12'},
+
+{'lat': 62.46315555555556, 'lon': 17.345713888888888, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250813_171003759_MFNR.jpg', 'date': '2025:08:13'},
+
+{'lat': 62.516575, 'lon': 17.42600277777778, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250813_171627749_MFNR.jpg', 'date': '2025:08:13'},
+
+{'lat': 62.517849999999996, 'lon': 17.425894444444445, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250813_171631522_MFNR.jpg', 'date': '2025:08:13'},
+
+{'lat': 62.539375, 'lon': 17.563930555555554, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250813_172220250_MFNR.jpg', 'date': '2025:08:13'},
+
+{'lat': 62.51818333333333, 'lon': 17.428516666666667, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250813_174502564_MFNR.jpg', 'date': '2025:08:13'},
+
+{'lat': 62.51818333333333, 'lon': 17.428516666666667, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250813_174503285_MFNR.jpg', 'date': '2025:08:13'},
+
+{'lat': 62.517897222222224, 'lon': 17.426961111111112, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250813_193451087_BURST001_COVER.jpg', 'date': '2025:08:13'},
+
+{'lat': 62.65083055555555, 'lon': 17.899083333333333, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250814_120708051_MFNR.jpg', 'date': '2025:08:14'},
+
+{'lat': 62.63647777777778, 'lon': 17.914766666666665, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250814_152634202_MFNR.jpg', 'date': '2025:08:14'},
+
+{'lat': 62.636377777777774, 'lon': 17.914908333333333, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250814_153004156_MFNR.jpg', 'date': '2025:08:14'},
+
+{'lat': 62.78776111111111, 'lon': 17.922150000000002, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250814_155450298_MFNR.jpg', 'date': '2025:08:14'},
+
+{'lat': 62.79013611111111, 'lon': 17.925752777777777, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250814_155502024_MFNR.jpg', 'date': '2025:08:14'},
+
+{'lat': 62.79121388888889, 'lon': 17.927530555555556, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250814_155508885_MFNR.jpg', 'date': '2025:08:14'},
+
+{'lat': 62.791580555555555, 'lon': 17.928116666666668, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250814_155510375_MFNR.jpg', 'date': '2025:08:14'},
+
+{'lat': 62.79247222222222, 'lon': 17.929544444444446, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250814_155515383_MFNR.jpg', 'date': '2025:08:14'},
+
+{'lat': 62.795383333333334, 'lon': 17.934169444444446, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250814_155531052_MFNR.jpg', 'date': '2025:08:14'},
+
+{'lat': 62.796366666666664, 'lon': 17.93563888888889, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250814_155721769_MFNR.jpg', 'date': '2025:08:14'},
+
+{'lat': 62.81843333333334, 'lon': 17.96938611111111, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250814_155726899_MFNR.jpg', 'date': '2025:08:14'},
+
+{'lat': 62.82692222222222, 'lon': 17.96883611111111, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250814_155800554_MFNR.jpg', 'date': '2025:08:14'},
+
+{'lat': 62.96730277777778, 'lon': 18.15916111111111, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250814_161046268_MFNR.jpg', 'date': '2025:08:14'},
+
+{'lat': 63.01423333333334, 'lon': 18.291216666666667, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250814_162620589_MFNR.jpg', 'date': '2025:08:14'},
+
+{'lat': 63.01495277777778, 'lon': 18.29175277777778, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250814_162644398_MFNR.jpg', 'date': '2025:08:14'},
+
+{'lat': 63.01533333333333, 'lon': 18.29226666666667, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250814_162653416_MFNR.jpg', 'date': '2025:08:14'},
+
+{'lat': 63.03281111111111, 'lon': 18.32187777777778, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250814_163003281_MFNR.jpg', 'date': '2025:08:14'},
+
+{'lat': 63.03281111111111, 'lon': 18.32187777777778, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250814_163003741_MFNR.jpg', 'date': '2025:08:14'},
+
+{'lat': 63.801024999999996, 'lon': 20.293366666666667, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250814_184942101_MFNR.jpg', 'date': '2025:08:14'},
+
+{'lat': 63.801005555555555, 'lon': 20.29456111111111, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250814_184953640_MFNR.jpg', 'date': '2025:08:14'},
+
+{'lat': 63.801005555555555, 'lon': 20.29456111111111, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250814_184954455_MFNR.jpg', 'date': '2025:08:14'},
+
+{'lat': 63.801005555555555, 'lon': 20.29456111111111, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250814_184955772_MFNR.jpg', 'date': '2025:08:14'},
+
+{'lat': 63.80124166666666, 'lon': 20.298519444444445, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250814_184956378_MFNR.jpg', 'date': '2025:08:14'},
+
+{'lat': 66.11546666666666, 'lon': 22.735947222222222, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250814_233719871.jpg', 'date': '2025:08:14'},
+
+{'lat': 66.11548333333333, 'lon': 22.73611388888889, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250814_233756279.jpg', 'date': '2025:08:14'},
+
+{'lat': 66.11547222222222, 'lon': 22.735944444444446, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250814_233827466.jpg', 'date': '2025:08:14'},
+
+{'lat': 66.1155, 'lon': 22.736008333333334, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250814_233902818.jpg', 'date': '2025:08:14'},
+
+{'lat': 66.1155, 'lon': 22.736008333333334, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250814_233915274.jpg', 'date': '2025:08:14'},
+
+{'lat': 66.1155, 'lon': 22.736008333333334, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250814_233923800.jpg', 'date': '2025:08:14'},
+
+{'lat': 66.13636111111111, 'lon': 22.763072222222224, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250815_093509499_MFNR.jpg', 'date': '2025:08:15'},
+
+{'lat': 66.13734166666667, 'lon': 22.76763611111111, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250815_093520042_MFNR.jpg', 'date': '2025:08:15'},
+
+{'lat': 66.14172777777779, 'lon': 22.777727777777777, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250815_093550154_MFNR.jpg', 'date': '2025:08:15'},
+
+{'lat': 68.23885555555556, 'lon': 19.533725, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250815_151424721_MFNR.jpg', 'date': '2025:08:15'},
+
+{'lat': 68.35089444444444, 'lon': 18.766861111111112, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250815_171210613_MFNR.jpg', 'date': '2025:08:15'},
+
+{'lat': 68.35087222222222, 'lon': 18.76676388888889, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250815_171215255_MFNR.jpg', 'date': '2025:08:15'},
+
+{'lat': 68.35583333333332, 'lon': 18.76864722222222, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250815_172548685_BURST001_COVER.jpg', 'date': '2025:08:15'},
+
+{'lat': 68.35583888888888, 'lon': 18.768652777777778, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250815_172551828_BURST001_COVER.jpg', 'date': '2025:08:15'},
+
+{'lat': 68.35751944444443, 'lon': 18.779433333333333, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250815_175659601_MFNR.jpg', 'date': '2025:08:15'},
+
+{'lat': 68.38085833333332, 'lon': 18.74292777777778, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250815_184424052_MFNR.jpg', 'date': '2025:08:15'},
+
+{'lat': 68.38144722222222, 'lon': 18.741991666666667, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250815_184428105_MFNR.jpg', 'date': '2025:08:15'},
+
+{'lat': 68.38230555555555, 'lon': 18.74074166666667, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250815_184433233_MFNR.jpg', 'date': '2025:08:15'},
+
+{'lat': 68.38605833333334, 'lon': 18.730574999999998, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250815_184504066_MFNR.jpg', 'date': '2025:08:15'},
+
+{'lat': 68.42751666666668, 'lon': 18.67151388888889, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250815_184918710_MFNR.jpg', 'date': '2025:08:15'},
+
+{'lat': 68.43915555555556, 'lon': 18.588344444444445, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250815_185241609_MFNR.jpg', 'date': '2025:08:15'},
+
+{'lat': 68.43834166666667, 'lon': 18.58803611111111, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250815_185246208_MFNR.jpg', 'date': '2025:08:15'},
+
+{'lat': 68.43406111111112, 'lon': 18.576791666666665, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250815_185333953_MFNR.jpg', 'date': '2025:08:15'},
+
+{'lat': 68.43265833333334, 'lon': 18.567252777777778, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250815_185358931_MFNR.jpg', 'date': '2025:08:15'},
+
+{'lat': 68.43110833333334, 'lon': 18.56376388888889, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250815_185409220_MFNR.jpg', 'date': '2025:08:15'},
+
+{'lat': 68.43059444444445, 'lon': 18.56139166666667, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250815_185414910_MFNR.jpg', 'date': '2025:08:15'},
+
+{'lat': 68.43053333333334, 'lon': 18.55156388888889, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250815_185434042_MFNR.jpg', 'date': '2025:08:15'},
+
+{'lat': 68.43067500000001, 'lon': 18.550541666666668, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250815_185435052_MFNR.jpg', 'date': '2025:08:15'},
+
+{'lat': 68.43073333333334, 'lon': 18.55003888888889, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250815_185436125_MFNR.jpg', 'date': '2025:08:15'},
+
+{'lat': 68.426, 'lon': 18.159905555555554, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250815_190800655_MFNR.jpg', 'date': '2025:08:15'},
+
+{'lat': 68.42612777777778, 'lon': 18.15813611111111, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250815_190804807_MFNR.jpg', 'date': '2025:08:15'},
+
+{'lat': 68.42615555555557, 'lon': 18.15768333333333, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250815_190805640_MFNR.jpg', 'date': '2025:08:15'},
+
+{'lat': 68.43879166666667, 'lon': 18.09965, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250815_191104879_MFNR.jpg', 'date': '2025:08:15'},
+
+{'lat': 68.43671666666667, 'lon': 18.101669444444447, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250815_191107804_MFNR.jpg', 'date': '2025:08:15'},
+
+{'lat': 68.43989166666667, 'lon': 18.0887, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250815_191148016_MFNR.jpg', 'date': '2025:08:15'},
+
+{'lat': 68.43999722222223, 'lon': 18.08787222222222, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250815_191203032_MFNR.jpg', 'date': '2025:08:15'},
+
+{'lat': 68.44233055555556, 'lon': 18.079277777777776, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250815_191217085_MFNR.jpg', 'date': '2025:08:15'},
+
+{'lat': 68.44401944444445, 'lon': 18.055169444444445, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250815_191321804_MFNR.jpg', 'date': '2025:08:15'},
+
+{'lat': 68.47358611111112, 'lon': 17.99725, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250815_191710741_MFNR.jpg', 'date': '2025:08:15'},
+
+{'lat': 69.13494444444446, 'lon': 18.188725, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250816_123917561_MFNR.jpg', 'date': '2025:08:16'},
+
+{'lat': 69.17449166666667, 'lon': 18.083158333333333, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250816_124920075_MFNR.jpg', 'date': '2025:08:16'},
+
+{'lat': 69.17437222222223, 'lon': 18.082469444444445, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250816_125304553_MFNR.jpg', 'date': '2025:08:16'},
+
+{'lat': 69.23921111111112, 'lon': 17.97863333333333, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250816_132315785_MFNR.jpg', 'date': '2025:08:16'},
+
+{'lat': 69.23942777777778, 'lon': 17.977791666666665, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250816_132318484_MFNR.jpg', 'date': '2025:08:16'},
+
+{'lat': 69.2404638888889, 'lon': 17.973827777777775, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250816_132331450_MFNR.jpg', 'date': '2025:08:16'},
+
+{'lat': 69.25807777777777, 'lon': 17.939594444444445, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250816_132718328_MFNR.jpg', 'date': '2025:08:16'},
+
+{'lat': 69.25826944444445, 'lon': 17.939405555555556, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250816_132719984_MFNR.jpg', 'date': '2025:08:16'},
+
+{'lat': 69.41926388888889, 'lon': 17.94663611111111, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250816_140054976_MFNR.jpg', 'date': '2025:08:16'},
+
+{'lat': 69.41923333333334, 'lon': 17.946325, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250816_140108157_MFNR.jpg', 'date': '2025:08:16'},
+
+{'lat': 69.51131388888889, 'lon': 17.587794444444445, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250816_160945019_MFNR.jpg', 'date': '2025:08:16'},
+
+{'lat': 69.51129444444445, 'lon': 17.587777777777777, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250816_161212594_MFNR.jpg', 'date': '2025:08:16'},
+
+{'lat': 69.51181666666666, 'lon': 17.58672222222222, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250816_163207353_MFNR.jpg', 'date': '2025:08:16'},
+
+{'lat': 69.51177777777778, 'lon': 17.586758333333332, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250816_163235600_MFNR.jpg', 'date': '2025:08:16'},
+
+{'lat': 69.51186944444444, 'lon': 17.58681111111111, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250816_163331214_MFNR.jpg', 'date': '2025:08:16'},
+
+{'lat': 69.40008333333334, 'lon': 18.03960277777778, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250816_165612962_MFNR.jpg', 'date': '2025:08:16'},
+
+{'lat': 69.51229444444445, 'lon': 17.5905, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250816_165616116_MFNR.jpg', 'date': '2025:08:16'},
+
+{'lat': 69.51446666666666, 'lon': 17.59353611111111, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250816_171141230_MFNR.jpg', 'date': '2025:08:16'},
+
+{'lat': 69.51445277777778, 'lon': 17.593341666666664, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250816_171237530_MFNR.jpg', 'date': '2025:08:16'},
+
+{'lat': 69.51180833333333, 'lon': 17.601097222222222, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250816_173312741_MFNR.jpg', 'date': '2025:08:16'},
+
+{'lat': 69.50814166666666, 'lon': 17.61627777777778, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250816_175338186_MFNR.jpg', 'date': '2025:08:16'},
+
+{'lat': 69.50814444444444, 'lon': 17.616266666666668, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250816_175343010_MFNR.jpg', 'date': '2025:08:16'},
+
+{'lat': 69.48731666666667, 'lon': 17.332830555555557, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250816_204300256_MFNR.jpg', 'date': '2025:08:16'},
+
+{'lat': 69.48731944444445, 'lon': 17.33281388888889, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250816_204302450_MFNR.jpg', 'date': '2025:08:16'},
+
+{'lat': 69.48744444444445, 'lon': 17.332655555555554, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250816_204334266_MFNR.jpg', 'date': '2025:08:16'},
+
+{'lat': 69.48744166666667, 'lon': 17.332694444444446, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250816_204338182_MFNR.jpg', 'date': '2025:08:16'},
+
+{'lat': 69.48744166666667, 'lon': 17.332708333333333, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250816_204339667_MFNR.jpg', 'date': '2025:08:16'},
+
+{'lat': 69.48850555555556, 'lon': 17.332530555555554, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250816_204637844_MFNR.jpg', 'date': '2025:08:16'},
+
+{'lat': 69.48851111111111, 'lon': 17.332508333333333, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250816_204641475_MFNR.jpg', 'date': '2025:08:16'},
+
+{'lat': 69.48851388888889, 'lon': 17.332486111111113, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250816_204644225_MFNR.jpg', 'date': '2025:08:16'},
+
+{'lat': 69.48851388888889, 'lon': 17.332491666666666, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250816_204649550_MFNR.jpg', 'date': '2025:08:16'},
+
+{'lat': 69.48903888888889, 'lon': 17.332875, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250816_205538295_MFNR.jpg', 'date': '2025:08:16'},
+
+{'lat': 69.48905555555555, 'lon': 17.332833333333333, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250816_205542017_MFNR.jpg', 'date': '2025:08:16'},
+
+{'lat': 69.48814722222222, 'lon': 17.33235277777778, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250816_210907996_MFNR.jpg', 'date': '2025:08:16'},
+
+{'lat': 69.48820833333333, 'lon': 17.332155555555556, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250816_210912993_MFNR.jpg', 'date': '2025:08:16'},
+
+{'lat': 69.48821666666667, 'lon': 17.33215, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250816_210914592_MFNR.jpg', 'date': '2025:08:16'},
+
+{'lat': 69.488225, 'lon': 17.332144444444445, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250816_210917945_MFNR.jpg', 'date': '2025:08:16'},
+
+{'lat': 69.488175, 'lon': 17.332330555555554, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250816_210953758_MFNR.jpg', 'date': '2025:08:16'},
+
+{'lat': 69.48743611111111, 'lon': 17.33278333333333, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250816_211241289_MFNR.jpg', 'date': '2025:08:16'},
+
+{'lat': 69.48742777777778, 'lon': 17.332830555555557, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250816_211242562_MFNR.jpg', 'date': '2025:08:16'},
+
+{'lat': 69.487425, 'lon': 17.332841666666667, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250816_211244123_MFNR.jpg', 'date': '2025:08:16'},
+
+{'lat': 69.46461388888889, 'lon': 17.233180555555553, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250817_105715503_MFNR.jpg', 'date': '2025:08:17'},
+
+{'lat': 69.46468055555556, 'lon': 17.23322222222222, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250817_105733978_MFNR.jpg', 'date': '2025:08:17'},
+
+{'lat': 69.46468055555556, 'lon': 17.233224999999997, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250817_105746913_MFNR.jpg', 'date': '2025:08:17'},
+
+{'lat': 69.46464166666667, 'lon': 17.233291666666666, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250817_105832419_MFNR.jpg', 'date': '2025:08:17'},
+
+{'lat': 69.46475277777778, 'lon': 17.23322222222222, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250817_105839294_MFNR.jpg', 'date': '2025:08:17'},
+
+{'lat': 69.471475, 'lon': 17.249291666666668, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250817_122232403_MFNR.jpg', 'date': '2025:08:17'},
+
+{'lat': 69.47103611111112, 'lon': 17.251013888888888, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250817_123430438_MFNR.jpg', 'date': '2025:08:17'},
+
+{'lat': 69.47129722222222, 'lon': 17.249933333333335, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250817_123734197_MFNR.jpg', 'date': '2025:08:17'},
+
+{'lat': 69.469525, 'lon': 17.24437777777778, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250817_140105112_MFNR.jpg', 'date': '2025:08:17'},
+
+{'lat': 69.4661888888889, 'lon': 17.228144444444442, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250817_145236887_MFNR.jpg', 'date': '2025:08:17'},
+
+{'lat': 69.46627777777778, 'lon': 17.22836111111111, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250817_145240528_MFNR.jpg', 'date': '2025:08:17'},
+
+{'lat': 69.46617222222223, 'lon': 17.228652777777775, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250817_151423442_MFNR.jpg', 'date': '2025:08:17'},
+
+{'lat': 69.44117777777778, 'lon': 17.443919444444443, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250817_160048432_MFNR.jpg', 'date': '2025:08:17'},
+
+{'lat': 69.42303055555556, 'lon': 17.50386111111111, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250817_161023257_MFNR.jpg', 'date': '2025:08:17'},
+
+{'lat': 69.42303055555556, 'lon': 17.50386111111111, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250817_161026995_MFNR.jpg', 'date': '2025:08:17'},
+
+{'lat': 69.42303055555556, 'lon': 17.50386111111111, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250817_161033192_MFNR.jpg', 'date': '2025:08:17'},
+
+{'lat': 69.40376666666667, 'lon': 17.289480555555556, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250817_162840816_MFNR.jpg', 'date': '2025:08:17'},
+
+{'lat': 69.40610555555556, 'lon': 17.278977777777776, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250817_162934280_MFNR.jpg', 'date': '2025:08:17'},
+
+{'lat': 69.40411944444445, 'lon': 17.278544444444442, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250817_162935861_MFNR.jpg', 'date': '2025:08:17'},
+
+{'lat': 69.36685833333333, 'lon': 17.054591666666667, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250817_190255797_MFNR.jpg', 'date': '2025:08:17'},
+
+{'lat': 69.36333611111111, 'lon': 17.02090833333333, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250817_190621758_MFNR.jpg', 'date': '2025:08:17'},
+
+{'lat': 69.35430277777778, 'lon': 16.94521111111111, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250817_191401162_MFNR.jpg', 'date': '2025:08:17'},
+
+{'lat': 69.35384722222221, 'lon': 16.932269444444447, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250817_191515147_MFNR.jpg', 'date': '2025:08:17'},
+
+{'lat': 69.34494166666666, 'lon': 16.720455555555553, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250817_193611032_MFNR.jpg', 'date': '2025:08:17'},
+
+{'lat': 69.23536666666666, 'lon': 16.095105555555556, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250817_195827137_MFNR.jpg', 'date': '2025:08:17'},
+
+{'lat': 69.33325555555555, 'lon': 16.496780555555556, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250817_195828152_MFNR.jpg', 'date': '2025:08:17'},
+
+{'lat': 69.32533888888888, 'lon': 16.21655277777778, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250817_202534230_MFNR.jpg', 'date': '2025:08:17'},
+
+{'lat': 69.32535555555555, 'lon': 16.215777777777777, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250817_202538704_MFNR.jpg', 'date': '2025:08:17'},
+
+{'lat': 69.32646388888888, 'lon': 16.144972222222222, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250817_203319212_MFNR.jpg', 'date': '2025:08:17'},
+
+{'lat': 69.32650833333334, 'lon': 16.144672222222223, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250817_203321872_MFNR.jpg', 'date': '2025:08:17'},
+
+{'lat': 69.32694166666666, 'lon': 16.13754722222222, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250817_203751473_MFNR.jpg', 'date': '2025:08:17'},
+
+{'lat': 69.26651944444444, 'lon': 15.919336111111111, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250817_211157129_MFNR.jpg', 'date': '2025:08:17'},
+
+{'lat': 69.26512222222222, 'lon': 15.91491388888889, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250818_110158653_MFNR.jpg', 'date': '2025:08:18'},
+
+{'lat': 69.26536944444445, 'lon': 15.915241666666667, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250818_110506548_MFNR.jpg', 'date': '2025:08:18'},
+
+{'lat': 69.26537777777777, 'lon': 15.915236111111112, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250818_110512630_MFNR.jpg', 'date': '2025:08:18'},
+
+{'lat': 69.10479722222222, 'lon': 15.571119444444443, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250818_121533892_MFNR.jpg', 'date': '2025:08:18'},
+
+{'lat': 69.10478333333333, 'lon': 15.571083333333332, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250818_121537745_MFNR.jpg', 'date': '2025:08:18'},
+
+{'lat': 69.10505555555555, 'lon': 15.571091666666666, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250818_121617513_MFNR.jpg', 'date': '2025:08:18'},
+
+{'lat': 69.10520277777778, 'lon': 15.570805555555555, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250818_121707619_MFNR.jpg', 'date': '2025:08:18'},
+
+{'lat': 69.10493055555555, 'lon': 15.568169444444445, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250818_122349678_MFNR.jpg', 'date': '2025:08:18'},
+
+{'lat': 69.10478333333333, 'lon': 15.568344444444444, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250818_122411893_MFNR.jpg', 'date': '2025:08:18'},
+
+{'lat': 69.10490833333333, 'lon': 15.5682, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250818_122429213_MFNR.jpg', 'date': '2025:08:18'},
+
+{'lat': 69.10490833333333, 'lon': 15.5682, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250818_122430893_MFNR.jpg', 'date': '2025:08:18'},
+
+{'lat': 69.10507222222222, 'lon': 15.568202777777778, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250818_122515812_MFNR.jpg', 'date': '2025:08:18'},
+
+{'lat': 69.10509444444443, 'lon': 15.568094444444444, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250818_122522844_MFNR.jpg', 'date': '2025:08:18'},
+
+{'lat': 68.75763611111111, 'lon': 15.12611388888889, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250818_144316114_MFNR.jpg', 'date': '2025:08:18'},
+
+{'lat': 68.94168333333333, 'lon': 15.011922222222223, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250818_152841107_MFNR.jpg', 'date': '2025:08:18'},
+
+{'lat': 68.9911861111111, 'lon': 15.02748888888889, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250818_160609561_MFNR.jpg', 'date': '2025:08:18'},
+
+{'lat': 68.99052222222222, 'lon': 15.02761388888889, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250818_163901222_MFNR.jpg', 'date': '2025:08:18'},
+
+{'lat': 68.99443611111111, 'lon': 15.011480555555556, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250818_172126493_MFNR.jpg', 'date': '2025:08:18'},
+
+{'lat': 68.99559166666667, 'lon': 15.012483333333334, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250818_173334415_MFNR.jpg', 'date': '2025:08:18'},
+
+{'lat': 68.99528055555555, 'lon': 15.012180555555556, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250818_173337266_MFNR.jpg', 'date': '2025:08:18'},
+
+{'lat': 68.99529444444444, 'lon': 15.012191666666666, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250818_173341357_MFNR.jpg', 'date': '2025:08:18'},
+
+{'lat': 68.89231111111111, 'lon': 15.08580277777778, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250818_220242929_MFNR.jpg', 'date': '2025:08:18'},
+
+{'lat': 68.89231944444445, 'lon': 15.085780555555557, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250818_220243472_BURST001_COVER.jpg', 'date': '2025:08:18'},
+
+{'lat': 68.89229722222223, 'lon': 15.085836111111112, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250818_220254994_BURST001_COVER.jpg', 'date': '2025:08:18'},
+
+{'lat': 68.75064722222223, 'lon': 14.908480555555556, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250819_115951866_MFNR.jpg', 'date': '2025:08:19'},
+
+{'lat': 68.75097222222222, 'lon': 14.799075, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250819_120206416_MFNR.jpg', 'date': '2025:08:19'},
+
+{'lat': 68.74907777777779, 'lon': 14.702233333333332, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250819_120713830_MFNR.jpg', 'date': '2025:08:19'},
+
+{'lat': 68.72854166666667, 'lon': 14.631002777777779, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250819_121845022_MFNR.jpg', 'date': '2025:08:19'},
+
+{'lat': 68.69917777777778, 'lon': 14.459802777777776, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250819_124342154_MFNR.jpg', 'date': '2025:08:19'},
+
+{'lat': 68.70639444444444, 'lon': 14.42991111111111, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250819_131748380_MFNR.jpg', 'date': '2025:08:19'},
+
+{'lat': 68.70632777777779, 'lon': 14.429402777777778, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250819_132225180_MFNR.jpg', 'date': '2025:08:19'},
+
+{'lat': 68.71179166666667, 'lon': 14.426169444444444, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250819_135239393_MFNR.jpg', 'date': '2025:08:19'},
+
+{'lat': 68.71192777777777, 'lon': 14.425752777777777, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250819_135709198_MFNR.jpg', 'date': '2025:08:19'},
+
+{'lat': 68.69740277777778, 'lon': 14.469072222222222, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250819_153734722_MFNR.jpg', 'date': '2025:08:19'},
+
+{'lat': 68.45700277777777, 'lon': 15.193586111111111, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250819_175219737_MFNR.jpg', 'date': '2025:08:19'},
+
+{'lat': 68.45705833333334, 'lon': 15.193200000000001, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250819_175220664_MFNR.jpg', 'date': '2025:08:19'},
+
+{'lat': 68.31693888888888, 'lon': 14.71701388888889, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250819_191853697_MFNR.jpg', 'date': '2025:08:19'},
+
+{'lat': 68.31605555555555, 'lon': 14.716183333333333, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250819_192056707_MFNR.jpg', 'date': '2025:08:19'},
+
+{'lat': 68.31648055555556, 'lon': 14.715597222222222, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250819_192214570_MFNR.jpg', 'date': '2025:08:19'},
+
+{'lat': 68.24222777777779, 'lon': 14.589444444444444, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250819_194126575_MFNR.jpg', 'date': '2025:08:19'},
+
+{'lat': 68.24221111111112, 'lon': 14.587961111111111, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250819_194130165_MFNR.jpg', 'date': '2025:08:19'},
+
+{'lat': 68.24548055555556, 'lon': 14.580497222222222, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250820_113517796_MFNR.jpg', 'date': '2025:08:20'},
+
+{'lat': 68.24551111111111, 'lon': 14.580605555555556, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250820_113520812_MFNR.jpg', 'date': '2025:08:20'},
+
+{'lat': 68.24647222222222, 'lon': 14.582141666666667, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250820_120034759_MFNR.jpg', 'date': '2025:08:20'},
+
+{'lat': 68.24640277777777, 'lon': 14.582366666666667, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250820_120223717_MFNR.jpg', 'date': '2025:08:20'},
+
+{'lat': 68.25095555555555, 'lon': 14.596761111111112, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250820_125914359_MFNR.jpg', 'date': '2025:08:20'},
+
+{'lat': 68.25072777777778, 'lon': 14.59815, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250820_132046716_MFNR.jpg', 'date': '2025:08:20'},
+
+{'lat': 68.25058888888888, 'lon': 14.598136111111112, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250820_132319858_MFNR.jpg', 'date': '2025:08:20'},
+
+{'lat': 68.2505861111111, 'lon': 14.59813888888889, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250820_132321226_MFNR.jpg', 'date': '2025:08:20'},
+
+{'lat': 68.24930833333333, 'lon': 14.598266666666667, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250820_133329236_MFNR.jpg', 'date': '2025:08:20'},
+
+{'lat': 68.24935833333333, 'lon': 14.598197222222224, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250820_133330899_MFNR.jpg', 'date': '2025:08:20'},
+
+{'lat': 68.24939722222223, 'lon': 14.598191666666667, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250820_133335780_MFNR.jpg', 'date': '2025:08:20'},
+
+{'lat': 68.24758333333334, 'lon': 14.597933333333334, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250820_134730653_MFNR.jpg', 'date': '2025:08:20'},
+
+{'lat': 68.24711666666667, 'lon': 14.595736111111112, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250820_135308528_MFNR.jpg', 'date': '2025:08:20'},
+
+{'lat': 68.247125, 'lon': 14.595808333333334, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250820_135354182_MFNR.jpg', 'date': '2025:08:20'},
+
+{'lat': 68.24724444444445, 'lon': 14.595675, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250820_140123682_MFNR.jpg', 'date': '2025:08:20'},
+
+{'lat': 68.24708611111112, 'lon': 14.595208333333334, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250820_140209649_MFNR.jpg', 'date': '2025:08:20'},
+
+{'lat': 68.24911944444445, 'lon': 14.589952777777778, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250820_144802772_MFNR.jpg', 'date': '2025:08:20'},
+
+{'lat': 68.24912777777777, 'lon': 14.589730555555557, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250820_144811442_MFNR.jpg', 'date': '2025:08:20'},
+
+{'lat': 68.24910277777778, 'lon': 14.589813888888889, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250820_144819594_MFNR.jpg', 'date': '2025:08:20'},
+
+{'lat': 68.24913055555555, 'lon': 14.589769444444444, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250820_144825426_MFNR.jpg', 'date': '2025:08:20'},
+
+{'lat': 68.24914444444444, 'lon': 14.589952777777778, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250820_144907205_MFNR.jpg', 'date': '2025:08:20'},
+
+{'lat': 68.24914444444444, 'lon': 14.589866666666667, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250820_144910717_MFNR.jpg', 'date': '2025:08:20'},
+
+{'lat': 68.24889166666667, 'lon': 14.588675, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250820_145438989_MFNR.jpg', 'date': '2025:08:20'},
+
+{'lat': 68.24889444444445, 'lon': 14.588677777777779, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250820_145440547_MFNR.jpg', 'date': '2025:08:20'},
+
+{'lat': 68.24888888888889, 'lon': 14.588691666666668, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250820_145444150_MFNR.jpg', 'date': '2025:08:20'},
+
+{'lat': 68.24798333333334, 'lon': 14.582738888888889, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250820_151616880_MFNR.jpg', 'date': '2025:08:20'},
+
+{'lat': 68.24644722222223, 'lon': 14.581672222222222, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250820_152038534_MFNR.jpg', 'date': '2025:08:20'},
+
+{'lat': 68.15577222222223, 'lon': 14.2069, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250820_163624755_MFNR.jpg', 'date': '2025:08:20'},
+
+{'lat': 68.15605833333333, 'lon': 14.206291666666665, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250820_163627068_MFNR.jpg', 'date': '2025:08:20'},
+
+{'lat': 68.15301388888889, 'lon': 14.202794444444443, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250820_170242480_MFNR.jpg', 'date': '2025:08:20'},
+
+{'lat': 68.15094444444445, 'lon': 14.200380555555554, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250820_170757206_MFNR.jpg', 'date': '2025:08:20'},
+
+{'lat': 68.15460833333334, 'lon': 14.203636111111111, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250820_184517622_MFNR.jpg', 'date': '2025:08:20'},
+
+{'lat': 68.27195, 'lon': 14.057500000000001, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250820_211939380_MFNR.jpg', 'date': '2025:08:20'},
+
+{'lat': 68.10271388888889, 'lon': 13.295580555555555, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250821_113843295_MFNR.jpg', 'date': '2025:08:21'},
+
+{'lat': 68.10270277777778, 'lon': 13.296391666666667, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250821_113845248_MFNR.jpg', 'date': '2025:08:21'},
+
+{'lat': 68.03502777777777, 'lon': 13.348711111111111, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250821_120703763_MFNR.jpg', 'date': '2025:08:21'},
+
+{'lat': 68.03399444444445, 'lon': 13.35075, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250821_122917050_MFNR.jpg', 'date': '2025:08:21'},
+
+{'lat': 68.07364444444444, 'lon': 13.225944444444444, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250821_140021703_MFNR.jpg', 'date': '2025:08:21'},
+
+{'lat': 68.07426111111111, 'lon': 13.204602777777778, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250821_140119522_MFNR.jpg', 'date': '2025:08:21'},
+
+{'lat': 68.0875361111111, 'lon': 13.168294444444443, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250821_140439999_MFNR.jpg', 'date': '2025:08:21'},
+
+{'lat': 68.07511388888888, 'lon': 13.110316666666666, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250821_155719642_MFNR.jpg', 'date': '2025:08:21'},
+
+{'lat': 68.07647777777777, 'lon': 13.106325, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250821_160744188_MFNR.jpg', 'date': '2025:08:21'},
+
+{'lat': 68.07635833333333, 'lon': 13.106411111111111, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250821_160946549_MFNR.jpg', 'date': '2025:08:21'},
+
+{'lat': 68.07893055555556, 'lon': 13.101433333333333, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250821_162857454_BURST001_COVER.jpg', 'date': '2025:08:21'},
+
+{'lat': 68.07890833333333, 'lon': 13.101447222222221, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250821_162901270_BURST001_COVER.jpg', 'date': '2025:08:21'},
+
+{'lat': 68.07883888888888, 'lon': 13.1014, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250821_162909145_BURST001_COVER.jpg', 'date': '2025:08:21'},
+
+{'lat': 68.07881666666667, 'lon': 13.101369444444444, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250821_162911498_BURST001_COVER_MFNR.jpg', 'date': '2025:08:21'},
+
+{'lat': 68.07894722222221, 'lon': 13.10131111111111, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250821_162931237_BURST001_COVER.jpg', 'date': '2025:08:21'},
+
+{'lat': 68.07892777777778, 'lon': 13.10135, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250821_162934334_BURST001_COVER.jpg', 'date': '2025:08:21'},
+
+{'lat': 68.07892777777778, 'lon': 13.10135, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250821_162941119_BURST001_COVER.jpg', 'date': '2025:08:21'},
+
+{'lat': 68.07890555555555, 'lon': 13.101355555555555, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250821_162947514_BURST001_COVER.jpg', 'date': '2025:08:21'},
+
+{'lat': 68.07890555555555, 'lon': 13.101355555555555, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250821_162953888_BURST001_COVER.jpg', 'date': '2025:08:21'},
+
+{'lat': 68.07890277777777, 'lon': 13.101366666666665, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250821_163020000_BURST001_COVER.jpg', 'date': '2025:08:21'},
+
+{'lat': 68.07889444444444, 'lon': 13.10136111111111, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250821_163029188_BURST001_COVER.jpg', 'date': '2025:08:21'},
+
+{'lat': 68.07891111111111, 'lon': 13.101377777777778, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250821_163032825_BURST001_COVER.jpg', 'date': '2025:08:21'},
+
+{'lat': 68.07891111111111, 'lon': 13.101377777777778, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250821_163040802_BURST001_COVER.jpg', 'date': '2025:08:21'},
+
+{'lat': 68.08374166666667, 'lon': 13.115355555555555, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250821_171721299_MFNR.jpg', 'date': '2025:08:21'},
+
+{'lat': 68.08482222222221, 'lon': 13.112444444444444, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250821_172646397_MFNR.jpg', 'date': '2025:08:21'},
+
+{'lat': 68.08477777777777, 'lon': 13.108938888888888, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250821_173029623_MFNR.jpg', 'date': '2025:08:21'},
+
+{'lat': 68.08477222222221, 'lon': 13.108966666666666, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250821_173032459_MFNR.jpg', 'date': '2025:08:21'},
+
+{'lat': 68.08666388888888, 'lon': 13.096308333333335, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250821_180127428_MFNR.jpg', 'date': '2025:08:21'},
+
+{'lat': 68.086675, 'lon': 13.096525, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250821_180133548_MFNR.jpg', 'date': '2025:08:21'},
+
+{'lat': 68.08686388888889, 'lon': 13.092441666666668, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250821_180607460_MFNR.jpg', 'date': '2025:08:21'},
+
+{'lat': 68.08672777777777, 'lon': 13.092380555555556, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250821_181531084_MFNR.jpg', 'date': '2025:08:21'},
+
+{'lat': 68.08937499999999, 'lon': 13.092916666666667, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250821_184755044_MFNR.jpg', 'date': '2025:08:21'},
+
+{'lat': 68.08937499999999, 'lon': 13.092916666666667, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250821_184756321_MFNR.jpg', 'date': '2025:08:21'},
+
+{'lat': 68.08937499999999, 'lon': 13.092916666666667, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250821_184759363_BURST001_COVER.jpg', 'date': '2025:08:21'},
+
+{'lat': 68.08937499999999, 'lon': 13.092916666666667, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250821_184804268_BURST001_COVER.jpg', 'date': '2025:08:21'},
+
+{'lat': 68.08937499999999, 'lon': 13.092916666666667, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250821_184809668_BURST001_COVER.jpg', 'date': '2025:08:21'},
+
+{'lat': 68.08939166666666, 'lon': 13.092997222222223, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250821_185731063_MFNR.jpg', 'date': '2025:08:21'},
+
+{'lat': 68.08323888888889, 'lon': 13.124230555555556, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250821_195715556_MFNR.jpg', 'date': '2025:08:21'},
+
+{'lat': 68.08294444444444, 'lon': 13.125319444444445, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250821_200058454_MFNR.jpg', 'date': '2025:08:21'},
+
+{'lat': 68.08299444444444, 'lon': 13.125280555555555, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250821_200102090_MFNR.jpg', 'date': '2025:08:21'},
+
+{'lat': 68.02857222222222, 'lon': 13.177530555555554, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250821_200405216_MFNR.jpg', 'date': '2025:08:21'},
+
+{'lat': 68.08275833333333, 'lon': 13.136244444444444, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250821_202801195_MFNR.jpg', 'date': '2025:08:21'},
+
+{'lat': 68.07418888888888, 'lon': 13.135716666666665, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250821_211612823_MFNR.jpg', 'date': '2025:08:21'},
+
+{'lat': 68.0685861111111, 'lon': 13.129541666666666, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250821_212759709_MFNR.jpg', 'date': '2025:08:21'},
+
+{'lat': 67.94732777777779, 'lon': 13.137447222222221, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250822_115735124_MFNR.jpg', 'date': '2025:08:22'},
+
+{'lat': 67.94665833333333, 'lon': 13.137697222222222, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250822_115741895_MFNR.jpg', 'date': '2025:08:22'},
+
+{'lat': 67.94114722222223, 'lon': 13.119736111111111, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250822_120132745_MFNR.jpg', 'date': '2025:08:22'},
+
+{'lat': 67.93868055555556, 'lon': 13.074183333333334, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250822_120637684_MFNR.jpg', 'date': '2025:08:22'},
+
+{'lat': 67.93868055555556, 'lon': 13.074183333333334, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250822_120643262_MFNR.jpg', 'date': '2025:08:22'},
+
+{'lat': 67.93388888888889, 'lon': 13.089405555555556, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250822_122326627_MFNR.jpg', 'date': '2025:08:22'},
+
+{'lat': 67.93496666666667, 'lon': 13.092069444444444, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250822_131310603_MFNR.jpg', 'date': '2025:08:22'},
+
+{'lat': 67.93493611111111, 'lon': 13.09231388888889, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250822_131320695_MFNR.jpg', 'date': '2025:08:22'},
+
+{'lat': 67.93491111111112, 'lon': 13.092227777777778, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250822_131335633_MFNR.jpg', 'date': '2025:08:22'},
+
+{'lat': 67.92590555555556, 'lon': 13.07601111111111, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250822_142156699_MFNR.jpg', 'date': '2025:08:22'},
+
+{'lat': 67.92775, 'lon': 13.074666666666666, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250822_145820581_MFNR.jpg', 'date': '2025:08:22'},
+
+{'lat': 67.92787222222222, 'lon': 13.072405555555555, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250822_151431639.jpg', 'date': '2025:08:22'},
+
+{'lat': 67.92786666666667, 'lon': 13.071316666666666, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250822_152054799.jpg', 'date': '2025:08:22'},
+
+{'lat': 67.92779444444444, 'lon': 13.07133611111111, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250822_152318196_MFNR.jpg', 'date': '2025:08:22'},
+
+{'lat': 67.92942500000001, 'lon': 13.089108333333334, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250822_163759983_BURST001_COVER.jpg', 'date': '2025:08:22'},
+
+{'lat': 67.92947777777778, 'lon': 13.089244444444445, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250822_163822722_MFNR.jpg', 'date': '2025:08:22'},
+
+{'lat': 67.88837777777779, 'lon': 13.008030555555555, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250822_204447508_MFNR.jpg', 'date': '2025:08:22'},
+
+{'lat': 67.88836388888889, 'lon': 13.008141666666667, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250822_204448765_MFNR.jpg', 'date': '2025:08:22'},
+
+{'lat': 67.89985, 'lon': 13.044622222222221, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250822_215754717_MFNR.jpg', 'date': '2025:08:22'},
+
+{'lat': 67.89985, 'lon': 13.044622222222221, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250822_215801468_MFNR.jpg', 'date': '2025:08:22'},
+
+{'lat': 66.49104444444444, 'lon': 13.873975, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250823_175351977_MFNR.jpg', 'date': '2025:08:23'},
+
+{'lat': 66.49383611111111, 'lon': 13.871744444444445, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250823_181613764_MFNR.jpg', 'date': '2025:08:23'},
+
+{'lat': 66.42166944444445, 'lon': 13.96553611111111, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250823_194349313_MFNR.jpg', 'date': '2025:08:23'},
+
+{'lat': 66.41071111111111, 'lon': 13.993363888888888, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250823_194657469_MFNR.jpg', 'date': '2025:08:23'},
+
+{'lat': 66.40891111111112, 'lon': 13.997777777777777, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250823_194742109_MFNR.jpg', 'date': '2025:08:23'},
+
+{'lat': 66.40890277777778, 'lon': 13.997766666666665, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250823_194745741_MFNR.jpg', 'date': '2025:08:23'},
+
+{'lat': 66.25056111111111, 'lon': 13.976991666666667, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250823_210221723_MFNR.jpg', 'date': '2025:08:23'},
+
+{'lat': 65.06092777777778, 'lon': 13.303155555555556, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250824_105018415_MFNR.jpg', 'date': '2025:08:24'},
+
+{'lat': 64.48724444444444, 'lon': 12.347091666666667, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250824_123258049_MFNR.jpg', 'date': '2025:08:24'},
+
+{'lat': 64.48698611111111, 'lon': 12.34675, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250824_123259949_MFNR.jpg', 'date': '2025:08:24'},
+
+{'lat': 63.42680555555555, 'lon': 10.411197222222222, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250824_162842291_MFNR.jpg', 'date': '2025:08:24'},
+
+{'lat': 63.42672777777778, 'lon': 10.411322222222223, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250824_162851080_MFNR.jpg', 'date': '2025:08:24'},
+
+{'lat': 63.42666944444444, 'lon': 10.410852777777778, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250824_163118389_MFNR.jpg', 'date': '2025:08:24'},
+
+{'lat': 63.42704444444444, 'lon': 10.410369444444445, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250824_163524424_MFNR.jpg', 'date': '2025:08:24'},
+
+{'lat': 63.42894444444444, 'lon': 10.402566666666667, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250824_172730189_BURST001_COVER.jpg', 'date': '2025:08:24'},
+
+{'lat': 63.16361388888889, 'lon': 10.305372222222223, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250824_182507386_MFNR.jpg', 'date': '2025:08:24'},
+
+{'lat': 63.16299444444444, 'lon': 10.304091666666668, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250824_182512815_MFNR.jpg', 'date': '2025:08:24'},
+
+{'lat': 63.16242777777778, 'lon': 10.302811111111112, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250824_182517265_MFNR.jpg', 'date': '2025:08:24'},
+
+{'lat': 63.138688888888886, 'lon': 10.254891666666667, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250824_182903726_MFNR.jpg', 'date': '2025:08:24'},
+
+{'lat': 62.56071111111111, 'lon': 9.078597222222221, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250824_202539451_MFNR.jpg', 'date': '2025:08:24'},
+
+{'lat': 62.561280555555555, 'lon': 9.077588888888888, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250824_202543853_MFNR.jpg', 'date': '2025:08:24'},
+
+{'lat': 62.65770277777778, 'lon': 8.662119444444444, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250824_205032038_MFNR.jpg', 'date': '2025:08:24'},
+
+{'lat': 62.56305, 'lon': 7.692261111111112, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250825_111317609_MFNR.jpg', 'date': '2025:08:25'},
+
+{'lat': 62.56368055555555, 'lon': 7.693361111111112, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250825_111552934_MFNR.jpg', 'date': '2025:08:25'},
+
+{'lat': 62.489561111111115, 'lon': 7.671833333333334, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250825_125951865_MFNR.jpg', 'date': '2025:08:25'},
+
+{'lat': 62.489441666666664, 'lon': 7.671916666666667, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250825_125953139_MFNR.jpg', 'date': '2025:08:25'},
+
+{'lat': 62.47640555555556, 'lon': 7.670158333333333, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250825_130210437_MFNR.jpg', 'date': '2025:08:25'},
+
+{'lat': 62.47640555555556, 'lon': 7.670158333333333, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250825_130211794_MFNR.jpg', 'date': '2025:08:25'},
+
+{'lat': 62.45988611111111, 'lon': 7.678527777777778, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250825_130847686_MFNR.jpg', 'date': '2025:08:25'},
+
+{'lat': 62.45971111111111, 'lon': 7.678622222222223, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250825_130849415_MFNR.jpg', 'date': '2025:08:25'},
+
+{'lat': 62.458222222222226, 'lon': 7.672916666666667, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250825_131144847_MFNR.jpg', 'date': '2025:08:25'},
+
+{'lat': 62.45830555555556, 'lon': 7.672902777777778, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250825_131146107_MFNR.jpg', 'date': '2025:08:25'},
+
+{'lat': 62.45715555555556, 'lon': 7.672416666666667, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250825_131223221_MFNR.jpg', 'date': '2025:08:25'},
+
+{'lat': 62.45885277777778, 'lon': 7.671397222222223, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250825_131303185_MFNR.jpg', 'date': '2025:08:25'},
+
+{'lat': 62.456541666666666, 'lon': 7.670347222222222, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250825_131447950_MFNR.jpg', 'date': '2025:08:25'},
+
+{'lat': 62.45728611111112, 'lon': 7.670130555555556, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250825_131458242_MFNR.jpg', 'date': '2025:08:25'},
+
+{'lat': 62.457569444444445, 'lon': 7.669944444444445, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250825_131502251_MFNR.jpg', 'date': '2025:08:25'},
+
+{'lat': 62.46174166666667, 'lon': 7.6665277777777785, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250825_131554265_MFNR.jpg', 'date': '2025:08:25'},
+
+{'lat': 62.46242777777778, 'lon': 7.6655444444444445, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250825_131604102_MFNR.jpg', 'date': '2025:08:25'},
+
+{'lat': 62.462500000000006, 'lon': 7.665444444444445, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250825_131607237_MFNR.jpg', 'date': '2025:08:25'},
+
+{'lat': 62.45412777777778, 'lon': 7.6653472222222225, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250825_132710664_MFNR.jpg', 'date': '2025:08:25'},
+
+{'lat': 62.454663888888895, 'lon': 7.669605555555556, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250825_133902151_MFNR.jpg', 'date': '2025:08:25'},
+
+{'lat': 62.45426944444445, 'lon': 7.665688888888889, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250825_140502428_MFNR.jpg', 'date': '2025:08:25'},
+
+{'lat': 62.280658333333335, 'lon': 7.180102777777778, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250825_160332037_MFNR.jpg', 'date': '2025:08:25'},
+
+{'lat': 62.26318888888889, 'lon': 7.170925, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250825_160729661_MFNR.jpg', 'date': '2025:08:25'},
+
+{'lat': 62.03198611111111, 'lon': 7.267413888888889, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250825_175536643_MFNR.jpg', 'date': '2025:08:25'},
+
+{'lat': 62.03198888888889, 'lon': 7.2674055555555555, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250825_175538569_MFNR.jpg', 'date': '2025:08:25'},
+
+{'lat': 61.664811111111106, 'lon': 6.835930555555556, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250825_202919444_MFNR.jpg', 'date': '2025:08:25'},
+
+{'lat': 61.66480833333333, 'lon': 6.835930555555556, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250825_202924882_MFNR.jpg', 'date': '2025:08:25'},
+
+{'lat': 61.66471388888889, 'lon': 6.8369027777777776, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250825_203354648_MFNR.jpg', 'date': '2025:08:25'},
+
+{'lat': 61.66489444444444, 'lon': 6.850213888888889, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250825_204810851_MFNR.jpg', 'date': '2025:08:25'},
+
+{'lat': 61.6646, 'lon': 6.8329555555555554, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250825_214416219_MFNR.jpg', 'date': '2025:08:25'},
+
+{'lat': 61.66454722222222, 'lon': 6.832902777777777, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250825_214420604_MFNR.jpg', 'date': '2025:08:25'},
+
+{'lat': 61.66451111111111, 'lon': 6.833019444444444, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250825_214459689.jpg', 'date': '2025:08:25'},
+
+{'lat': 61.66451111111111, 'lon': 6.833019444444444, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250825_214519074.jpg', 'date': '2025:08:25'},
+
+{'lat': 61.66289444444444, 'lon': 6.821544444444444, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250825_215829214_MFNR.jpg', 'date': '2025:08:25'},
+
+{'lat': 61.66296111111111, 'lon': 6.821652777777778, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250825_215832523_MFNR.jpg', 'date': '2025:08:25'},
+
+{'lat': 61.65656944444444, 'lon': 9.599202777777778, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250826_065243400.jpg', 'date': '2025:08:26'},
+
+{'lat': 59.913694444444445, 'lon': 10.700419444444444, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250826_112356431_MFNR.jpg', 'date': '2025:08:26'},
+
+{'lat': 59.91383611111111, 'lon': 10.700252777777777, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250826_112357180_MFNR.jpg', 'date': '2025:08:26'},
+
+{'lat': 59.91383611111111, 'lon': 10.700252777777777, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250826_112357847_MFNR.jpg', 'date': '2025:08:26'},
+
+{'lat': 59.91396388888889, 'lon': 10.700027777777777, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250826_112358516_MFNR.jpg', 'date': '2025:08:26'},
+
+{'lat': 58.15518888888889, 'lon': 8.000311111111111, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250826_160449120_MFNR.jpg', 'date': '2025:08:26'},
+
+{'lat': 58.142669444444444, 'lon': 7.983538888888889, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250826_163604710_MFNR.jpg', 'date': '2025:08:26'},
+
+{'lat': 58.14352777777778, 'lon': 7.986816666666667, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250826_164928264_BURST001_COVER.jpg', 'date': '2025:08:26'},
+
+{'lat': 58.14291388888889, 'lon': 7.988036111111112, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250826_171955493_MFNR.jpg', 'date': '2025:08:26'},
+
+{'lat': 58.140325, 'lon': 7.987422222222222, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250826_172102785_MFNR.jpg', 'date': '2025:08:26'},
+
+{'lat': 57.45876388888889, 'lon': 9.82235, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250826_202601727_MFNR.jpg', 'date': '2025:08:26'},
+
+{'lat': 57.458775, 'lon': 9.822288888888888, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250826_202613866_MFNR.jpg', 'date': '2025:08:26'},
+
+{'lat': 57.45877777777778, 'lon': 9.82225, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250826_202623445_MFNR.jpg', 'date': '2025:08:26'},
+
+{'lat': 57.448813888888886, 'lon': 9.778586111111112, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250826_205641813.jpg', 'date': '2025:08:26'},
+
+{'lat': 57.448811111111105, 'lon': 9.778594444444446, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250826_205650551.jpg', 'date': '2025:08:26'},
+
+{'lat': 57.4488, 'lon': 9.778066666666668, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250826_205730203.jpg', 'date': '2025:08:26'},
+
+{'lat': 57.44883333333333, 'lon': 9.777266666666668, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250826_205903706.jpg', 'date': '2025:08:26'},
+
+{'lat': 57.44883333333333, 'lon': 9.777266666666668, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250826_205921093.jpg', 'date': '2025:08:26'},
+
+{'lat': 57.448927777777776, 'lon': 9.777219444444444, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250826_210017955.jpg', 'date': '2025:08:26'},
+
+{'lat': 57.448927777777776, 'lon': 9.777202777777779, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250826_210039365.jpg', 'date': '2025:08:26'},
+
+{'lat': 57.448927777777776, 'lon': 9.777202777777779, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250826_210054655.jpg', 'date': '2025:08:26'},
+
+{'lat': 57.44893055555555, 'lon': 9.777230555555557, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250826_210145334.jpg', 'date': '2025:08:26'},
+
+{'lat': 57.44894166666666, 'lon': 9.777219444444444, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250826_210159027.jpg', 'date': '2025:08:26'},
+
+{'lat': 57.44904722222222, 'lon': 9.775608333333334, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250826_211003159_MFNR.jpg', 'date': '2025:08:26'},
+
+{'lat': 57.44903055555555, 'lon': 9.775558333333334, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250826_211036541_MFNR.jpg', 'date': '2025:08:26'},
+
+{'lat': 57.44903055555555, 'lon': 9.775558333333334, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250826_211102723_MFNR.jpg', 'date': '2025:08:26'},
+
+{'lat': 57.44926944444444, 'lon': 9.775661111111113, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250826_211319445_MFNR.jpg', 'date': '2025:08:26'},
+
+{'lat': 57.44916666666666, 'lon': 9.77555, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250826_211333724_MFNR.jpg', 'date': '2025:08:26'},
+
+{'lat': 57.44916666666666, 'lon': 9.77555, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250826_211337102_MFNR.jpg', 'date': '2025:08:26'},
+
+{'lat': 57.44916666666666, 'lon': 9.77555, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250826_211338404_MFNR.jpg', 'date': '2025:08:26'},
+
+{'lat': 57.44908611111111, 'lon': 9.775527777777778, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250826_211413656.jpg', 'date': '2025:08:26'},
+
+{'lat': 57.44908611111111, 'lon': 9.775527777777778, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250826_211420736.jpg', 'date': '2025:08:26'},
+
+{'lat': 57.44925555555555, 'lon': 9.776508333333334, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250826_211734612.jpg', 'date': '2025:08:26'},
+
+{'lat': 57.44925555555555, 'lon': 9.776547222222224, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250826_211815736.jpg', 'date': '2025:08:26'},
+
+{'lat': 57.44925555555555, 'lon': 9.776547222222224, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250826_211848928.jpg', 'date': '2025:08:26'},
+
+{'lat': 57.44925555555555, 'lon': 9.776547222222224, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250826_211924366.jpg', 'date': '2025:08:26'},
+
+{'lat': 57.44928055555555, 'lon': 9.77667777777778, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250826_212114493.jpg', 'date': '2025:08:26'},
+
+{'lat': 50.06738055555556, 'lon': 14.310611111111111, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250827_233535564_MFNR.jpg', 'date': '2025:08:27'},
+
+{'lat': 50.06753888888889, 'lon': 14.310683333333333, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250828_180135207_MFNR.jpg', 'date': '2025:08:28'},
+
+{'lat': 50.06764722222223, 'lon': 14.311094444444445, 'path': '/Users/mira/tmp/norsko komplet/IMG_20250828_180154350_MFNR.jpg', 'date': '2025:08:28'}];
+
+
+      var line = L.motion.polyline(data, {}, motion_options, {}).addTo(map);
+      map.setView([61.66, 6,82], 4);
+
+      
+      
+     // data.forEach((point) => {
+     //   L.marker({lon: point.lon, lat: point.lat}).bindPopup("<img src='" + point.path + "'>").on('click', onClick).addTo(map);
+     // });
+
+    </script>
+  </body>
+</html>
